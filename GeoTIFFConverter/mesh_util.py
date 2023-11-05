@@ -3,7 +3,7 @@ import numpy as np
 
 class MeshUtil:
     
-    def point_cloud_to_mesh(xyz, path):
+    def point_cloud_to_mesh(xyz, path, ):
         
         # Pass xyz to Open3D.o3d.geometry.PointCloud
         pcd = o3d.geometry.PointCloud()
