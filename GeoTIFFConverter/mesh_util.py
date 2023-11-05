@@ -3,11 +3,15 @@ import numpy as np
 
 class MeshUtil:
     
-    def point_cloud_to_mesh(xyz, path, ):
+    def point_cloud_to_mesh(xyz, path, downsample_voxel_size=0):
         
         # Pass xyz to Open3D.o3d.geometry.PointCloud
         pcd = o3d.geometry.PointCloud()
         pcd.points = o3d.utility.Vector3dVector(xyz)
+
+        if downsample_voxel_size > 0:
+            print("Point-cloud downsampled")
+            pcd = pcd.voxel_down_sample(voxel_size=downsample_voxel_size)
 
         # Estimate normals
         pcd.estimate_normals()

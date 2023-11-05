@@ -8,7 +8,7 @@ def visualize_tif(tiff_raw):
 def generate_mesh(tiff_raw):
     data = tiff.GeoTiff(tiff_raw[0])
     xyz = tiff.Converter.to_point_cloud(data)
-    tiff.MeshUtil.point_cloud_to_mesh(xyz, "/data/mesh.obj")
+    tiff.MeshUtil.point_cloud_to_mesh(xyz, "/data/mesh.obj", downsample_voxel_size=20)
 
 with gr.Blocks() as demo:
 
