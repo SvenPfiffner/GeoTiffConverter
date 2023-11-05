@@ -1,3 +1,12 @@
 import GeoTIFFConverter as tiff
+import numpy as np
 
-tiff.MeshUtil.test()
+x, o = np.linspace(1, 16, 4).reshape((-1, 4)), np.ones((4, 1))
+X = np.matmul(o, x)
+Y = X.copy().transpose()
+coord = np.dstack([X,Y]).reshape((-1, 2))
+
+print(X)
+print(Y)
+print(coord)
+#tiff.MeshUtil.test()
