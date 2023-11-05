@@ -1,1 +1,2 @@
-rasterio>=1.3.9
+rasterio
+open3d

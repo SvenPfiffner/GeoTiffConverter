@@ -5,6 +5,11 @@ import rasterio as rio
 
 class GeoTiff:
 
+    def fromCollection(paths):
+        out = []
+        for p in paths:
+            out.append(GeoTiff(p))
+
     def merge(geoTiffs):
         rasters = []
         for g in geoTiffs:
