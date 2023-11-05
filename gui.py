@@ -5,10 +5,11 @@ def visualize_tif(tiff_raw):
     data = tiff.GeoTiff(tiff_raw[0])
     return data.visualize()
 
-def generate_mesh(tiff_raw):
+def generate_mesh(tiff_raw, downsample):
     data = tiff.GeoTiff(tiff_raw[0])
     xyz = tiff.Converter.to_point_cloud(data)
-    tiff.MeshUtil.point_cloud_to_mesh(xyz, "/data/mesh.obj", downsample_voxel_size=20)
+    tiff.MeshUtil.point_cloud_to_mesh(xyz, "data/mesh.obj", downsample_voxel_size=downsample)
+    return "data/mesh.obj"
 
 with gr.Blocks() as demo:
 
@@ -24,11 +25,12 @@ with gr.Blocks() as demo:
                 visualization_output = gr.Plot()
             #Mesh site
             with gr.Column():
+                voxel_downsampling = gr.Slider(minimum=0, maximum=50, value=20, step=1)
                 mesh_button = gr.Button("Generate Mesh")
-                mesh_output = gr.Plot()
+                mesh_output = gr.Model3D()
 
 
     visualization_button.click(fn=visualize_tif, inputs=[input_tiffs], outputs=visualization_output)
-    mesh_button.click(fn=generate_mesh, inputs=[input_tiffs], outputs=mesh_output)
+    mesh_button.click(fn=generate_mesh, inputs=[input_tiffs, voxel_downsampling], outputs=mesh_output)
 
 demo.launch()

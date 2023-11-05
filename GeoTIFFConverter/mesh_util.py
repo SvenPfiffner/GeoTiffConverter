@@ -21,10 +21,7 @@ class MeshUtil:
         with o3d.utility.VerbosityContextManager(o3d.utility.VerbosityLevel.Debug) as cm:
             mesh, densities = o3d.geometry.TriangleMesh.create_from_point_cloud_poisson(pcd, depth=9)
 
-        # Visualize
-        mesh.paint_uniform_color([0.165, 0.969, 0.965])
-        mesh.compute_vertex_normals()
-        o3d.visualization.draw_geometries([mesh])
-
         # Save
+        R = mesh.get_rotation_matrix_from_xyz((-np.pi / 2, 0, 0))
+        mesh.rotate(R, center=(0, 0, 0))
         o3d.io.write_triangle_mesh(path, mesh)
