@@ -1,7 +1,10 @@
 import rasterio
+from matplotlib import pyplot as plt
 from rasterio.merge import merge
 import rasterio.plot
 import rasterio as rio
+import io
+import numpy as np
 
 class GeoTiff:
 
@@ -38,7 +41,9 @@ class GeoTiff:
 
     def visualize(self):
         rasterio.plot.show(self.tiff, title="GeoTIFF visualisation")
+        return plt.gcf()
 
+        
     def __str__(self):
         out = "GeoData with"
         out += f"\n Spacial bounding box:\n  Bottom-Left: {self.tiff.bounds.left, self.tiff.bounds.bottom}"
