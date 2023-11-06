@@ -3,4 +3,4 @@ def func():
     return True
 
 def test_answer():
-    assert func(3)
+    assert func()

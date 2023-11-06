@@ -15,23 +15,23 @@ def tiff_consistency(data1, data2, data3, data4, compare):
 
 
 def test_read_tiff():
-    data = tiff.GeoTiff("1.tif") 
+    data = tiff.GeoTiff("tests/1.tif") 
 
 
 def test_tiff_merge():
-    data1 = tiff.GeoTiff("1.tif")
-    data2 = tiff.GeoTiff("2.tif")
-    data3 = tiff.GeoTiff("3.tif")
-    data4 = tiff.GeoTiff("4.tif")
+    data1 = tiff.GeoTiff("tests/1.tif")
+    data2 = tiff.GeoTiff("tests/2.tif")
+    data3 = tiff.GeoTiff("tests/3.tif")
+    data4 = tiff.GeoTiff("tests/4.tif")
     merged_data = tiff.GeoTiff.merge([data1, data2, data3, data4])
     tiff_consistency(data1, data2, data3, data4, merged_data)
 
 def test_tiff_from_collection():
-    data1 = tiff.GeoTiff("1.tif")
-    data2 = tiff.GeoTiff("2.tif")
-    data3 = tiff.GeoTiff("3.tif")
-    data4 = tiff.GeoTiff("4.tif")
-    paths = ["1.tif", "2.tif", "3.tif", "4.tif"]
+    data1 = tiff.GeoTiff("tests/1.tif")
+    data2 = tiff.GeoTiff("tests/2.tif")
+    data3 = tiff.GeoTiff("tests/3.tif")
+    data4 = tiff.GeoTiff("tests/4.tif")
+    paths = ["tests/1.tif", "tests/2.tif", "tests/3.tif", "tests/4.tif"]
     merged_data = tiff.GeoTiff.fromCollection(paths)
     tiff_consistency(data1, data2, data3, data4, merged_data)
 
