@@ -2,3 +2,4 @@
 **/__pycache__
 # Ignore generated data
 data/
+# Ignore main.py
