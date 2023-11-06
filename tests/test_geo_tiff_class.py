@@ -4,8 +4,8 @@ import GeoTIFFConverter as tiff
 def tiff_consistency(data1, data2, data3, data4, compare):
 
     # Check that merged tile adheres to dimensions
-    width = data1.tiff.width + data2.tiff.width + data3.tiff.width + data4.tiff.width
-    height = data1.tiff.height + data2.tiff.height + data3.tiff.height + data4.tiff.height
+    width = data1.tiff.width * 2
+    height = data1.tiff.height * 2
     assert compare.tiff.width == width
     assert compare.tiff.height == height
 
