@@ -29,7 +29,7 @@ with gr.Blocks() as demo:
                 voxel_downsampling = gr.Slider(label="Downsampling strength", minimum=0, maximum=50, value=20, step=1)
                 with gr.Row():
                     lowest_height = gr.Number(label="Height of lowest vertex", minimum=0)
-                    include_base = gr.Radio(label="Add base to mesh", choices=["True", "False"])
+                    include_base = gr.Radio(label="Add base to mesh", choices=["True", "False"], value="False")
                 mesh_button = gr.Button("Generate Mesh")
                 mesh_output = gr.Model3D()
 
