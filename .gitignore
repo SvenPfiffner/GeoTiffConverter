@@ -1,5 +1,10 @@
 # Ignore pycache
 **/__pycache__
 # Ignore generated data
-data/
+/data
 # Ignore main.py
+main.py
+# Ignore vscode files
+/.vscode
+# Ignore test cache
+/.pytest_cache

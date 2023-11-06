@@ -12,6 +12,7 @@ class GeoTiff:
         out = []
         for p in paths:
             out.append(GeoTiff(p))
+        return merge(out)
 
     def merge(geoTiffs):
         rasters = []
