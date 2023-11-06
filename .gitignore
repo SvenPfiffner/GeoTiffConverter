@@ -1,2 +1,4 @@
 # Ignore pycache
 **/__pycache__
+# Ignore generated data
+data/
