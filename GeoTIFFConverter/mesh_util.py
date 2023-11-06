@@ -2,8 +2,12 @@ import open3d as o3d
 import numpy as np
 
 class MeshUtil:
-    
-    def point_cloud_to_mesh(xyz, path, downsample_voxel_size=0):
+
+    def add_base_to_mesh(mesh):
+        # TODO: Add a baseplate to the mesh
+        return mesh
+
+    def point_cloud_to_mesh(xyz, path, downsample_voxel_size=0, add_base=False):
         
         # Pass xyz to Open3D.o3d.geometry.PointCloud
         pcd = o3d.geometry.PointCloud()
@@ -20,6 +24,9 @@ class MeshUtil:
         # Run Poisson surface reconstruction    
         with o3d.utility.VerbosityContextManager(o3d.utility.VerbosityLevel.Debug) as cm:
             mesh, densities = o3d.geometry.TriangleMesh.create_from_point_cloud_poisson(pcd, depth=9)
+
+        if add_base:
+            mesh = MeshUtil.add_base_to_mesh(mesh)
 
         # Save
         R = mesh.get_rotation_matrix_from_xyz((-np.pi / 2, 0, 0))

@@ -14,7 +14,7 @@ def generate_mesh(tiff_raw, downsample):
 with gr.Blocks() as demo:
 
     # Single Image Tab
-    with gr.Tab("swissALTI3D"):
+    with gr.Tab("Elevation-TIFF"):
         # Input Tiff
         input_tiffs = gr.File(label="Input TIFFs", file_count='multiple', file_types=[".tif"])
         # IO
