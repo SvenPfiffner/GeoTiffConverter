@@ -2,3 +2,5 @@ rasterio
 open3d
 gradio
 pytest
+pyproj
+geopy
