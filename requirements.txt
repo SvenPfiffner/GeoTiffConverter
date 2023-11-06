@@ -1,3 +1,4 @@
 rasterio
 open3d
 gradio
+pytest
