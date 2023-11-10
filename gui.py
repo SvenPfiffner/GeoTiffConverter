@@ -1,8 +1,6 @@
 import GeoTIFFConverter as tiff
 import gradio as gr
 
-from geopy.geocoders import Nominatim
-
 def visualize_tif(tiff_raw):
     data = tiff.GeoTiff(tiff_raw[0])
     return data.visualize()
@@ -15,13 +13,16 @@ def generate_mesh(tiff_raw, downsample, add_base, height):
     return "data/mesh.obj"
 
 def retrieve_geo_data(tiff_raw):
+    # Read bounding coordinates from TIFF
     data = tiff.GeoTiff(tiff_raw)
-    cords = data.get_bounding_coordinates()
-    geolocator = Nominatim(user_agent="geo_tiff_converter")
-    location = geolocator.reverse(cords[2])
+    box_coords = data.get_bounding_coordinates()
 
-    location_text = f"Region is bound by (lat, lon)\n   Bottom-Left: {cords[0]}\n    Top-Right: {cords[1]}\nin the EPSG:4326 system"
-    location_text += f"\n\nThis corresponds rougly to {location.address}"
+    # Retrieve address of bbox center
+    center_coord = tiff.Coordinate.get_midpoint(box_coords[0], box_coords[1])
+    address = tiff.Cartographer.coord_to_address(center_coord.as_latlong())
+
+    location_text = f"Region is bound by (lat, lon)\n   Bottom-Left: {box_coords[0].as_latlong().to_numpy().T}\n    Top-Right: {box_coords[1].as_latlong().to_numpy().T}\nin the EPSG:4326 system"
+    location_text += f"\n\nThis corresponds rougly to {address}"
     return [location_text, "World"]
 
 def retrieve_meta_data(tiff_raw):

@@ -7,6 +7,7 @@ import io
 import numpy as np
 import math
 import pyproj
+from .Coordinate import Coordinate
 
 class GeoTiff:
 
@@ -47,22 +48,19 @@ class GeoTiff:
         return plt.gcf()
     
     def get_bounding_coordinates(self):
-        source_proj = pyproj.Proj(init=self.tiff.crs)
-        target_proj = pyproj.Proj(init='epsg:4326')
         x1, y1 = self.tiff.bounds.left, self.tiff.bounds.bottom
         x2, y2 = self.tiff.bounds.right, self.tiff.bounds.top
-
-        lon1, lat1 = pyproj.transform(source_proj, target_proj, x1, y1)
-        lon2, lat2 = pyproj.transform(source_proj, target_proj, x2, y2)
-
-        c_lon, c_lat = (lon1 + lon2) / 2, (lat1 + lat2) / 2
-        return ((lat1, lon1), (lat2, lon2), (c_lat, c_lon))
+        return Coordinate((x1, y1), self.get_proj()), Coordinate((x2, y2), self.get_proj())
+    
+    def get_proj(self):
+        return self.tiff.crs
 
     def __str__(self):
+        bbox = self.get_bounding_coordinates()
         out = "GeoData with"
-        out += f"\n Spacial bounding box:\n  Bottom-Left: {self.tiff.bounds.left, self.tiff.bounds.bottom}"
-        out += f"\n  Top-Right: {self.tiff.bounds.right, self.tiff.bounds.top}"
+        out += f"\n Spacial bounding box:\n  Bottom-Left: {bbox[0]}"
+        out += f"\n  Top-Right: {bbox[1]}"
         out += f"\n Number of Bands: {self.tiff.count}"
         out += f"\n Raster Size: {self.tiff.width, self.tiff.height}"
-        out += f"\n Coordinate Reference: {self.tiff.crs}"
+        out += f"\n Coordinate Reference: {self.get_proj()}"
         return out
