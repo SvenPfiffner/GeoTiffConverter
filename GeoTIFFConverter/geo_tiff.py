@@ -5,6 +5,9 @@ import rasterio.plot
 import rasterio as rio
 import io
 import numpy as np
+import math
+import pyproj
+from .Coordinate import Coordinate
 
 class GeoTiff:
 
@@ -43,13 +46,21 @@ class GeoTiff:
     def visualize(self):
         rasterio.plot.show(self.tiff, title="GeoTIFF visualisation")
         return plt.gcf()
+    
+    def get_bounding_coordinates(self):
+        x1, y1 = self.tiff.bounds.left, self.tiff.bounds.bottom
+        x2, y2 = self.tiff.bounds.right, self.tiff.bounds.top
+        return Coordinate((x1, y1), self.get_proj()), Coordinate((x2, y2), self.get_proj())
+    
+    def get_proj(self):
+        return self.tiff.crs
 
-        
     def __str__(self):
+        bbox = self.get_bounding_coordinates()
         out = "GeoData with"
-        out += f"\n Spacial bounding box:\n  Bottom-Left: {self.tiff.bounds.left, self.tiff.bounds.bottom}"
-        out += f"\n  Top-Right: {self.tiff.bounds.right, self.tiff.bounds.top}"
+        out += f"\n Spacial bounding box:\n  Bottom-Left: {bbox[0]}"
+        out += f"\n  Top-Right: {bbox[1]}"
         out += f"\n Number of Bands: {self.tiff.count}"
         out += f"\n Raster Size: {self.tiff.width, self.tiff.height}"
-        out += f"\n Coordinate Reference: {self.tiff.crs}"
+        out += f"\n Coordinate Reference: {self.get_proj()}"
         return out
