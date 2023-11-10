@@ -9,13 +9,13 @@ import math
 import pyproj
 from .Coordinate import Coordinate
 
-class GeoTiff:
+class TiffFile:
 
     def fromCollection(paths):
         out = []
         for p in paths:
-            out.append(GeoTiff(p))
-        return GeoTiff.merge(out)
+            out.append(TiffFile(p))
+        return TiffFile.merge(out)
 
     def merge(geoTiffs):
         rasters = []
@@ -34,7 +34,7 @@ class GeoTiff:
         with rio.open("data/merge.tif", "w", **output_meta) as m:
             m.write(mosaic)
 
-        return GeoTiff("data/merge.tif")
+        return TiffFile("data/merge.tif")
 
     
     def __init__(self, path):

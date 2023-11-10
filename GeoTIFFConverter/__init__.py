@@ -1,4 +1,4 @@
-from .geo_tiff import GeoTiff
+from .TiffFile import TiffFile
 from .converter import Converter
 from .mesh_util import MeshUtil
 from .Cartographer import Cartographer

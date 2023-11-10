@@ -1,10 +1,10 @@
 import numpy as np
-from . import geo_tiff
+from .TiffFile import TiffFile
 
 class Converter:
 
     #Generate the point-cloud for a single tiff
-    def tile_to_point_cloud(tiff: geo_tiff.GeoTiff, base_height: float = 0.0) -> list:
+    def tile_to_point_cloud(tiff: TiffFile, base_height: float = 0.0) -> list:
         # Get elevation data
         data = tiff.to_numpy()[0]
 
