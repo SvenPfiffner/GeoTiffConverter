@@ -2,6 +2,7 @@
 # Created: November 2023
 
 from .TiffSolid import TiffSolid
+import numpy as np
 
 class TiffPc(TiffSolid):
     """
@@ -27,7 +28,7 @@ class TiffPc(TiffSolid):
         data = tiff.to_numpy()[0]
 
         # Normalize height
-        data -= (data.min() - base_height)
+        data -= (data.min())
 
         # Create point cloud
         x = np.linspace(0, ((data.shape[0] - 1) / 2), num = data.shape[0]).reshape((-1, 1))
