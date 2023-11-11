@@ -2,15 +2,26 @@ import numpy as np
 from .TiffFile import TiffFile
 
 class Converter:
+    """
+    A class for generating point clouds from TIFF files.
+    """
 
-    #Generate the point-cloud for a single tiff
     def tile_to_point_cloud(tiff: TiffFile, base_height: float = 0.0) -> list:
-        # Get elevation data
+        """
+        Generate a point cloud for a single TIFF file.
+
+        Args:
+        tiff (TiffFile): The TIFF data to generate the point cloud from.
+        base_height (float, optional): The base height for normalization. Defaults to 0.0.
+
+        Returns:
+        list: A point cloud as a list of 3D-coordinates.
+        """
+
         data = tiff.to_numpy()[0]
 
         # Normalize height
         data -= (data.min() - base_height)
-        #print(data)
 
         # Create point cloud
         x = np.linspace(0, ((data.shape[0] - 1) / 2), num = data.shape[0]).reshape((-1, 1))
@@ -33,8 +44,17 @@ class Converter:
         return XYZ.reshape((-1, 3))
     
 
-    #Generate a point-clouds for multiple tiffs and merge them
     def to_point_cloud(all_tiffs: list, base_height: float = 0.0) -> list:
+        """
+        Generate point clouds for multiple TIFF data and merge them into a single point cloud.
+
+        Args:
+        all_tiffs (list): A list of TiffFile instances.
+        base_height (float, optional): The base height for normalization. Defaults to 0.0.
+
+        Returns:
+        list: A merged point cloud as a list of 3D-coordinates.
+        """
 
         first_tile = True
 

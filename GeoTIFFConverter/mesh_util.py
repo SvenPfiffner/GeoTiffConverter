@@ -2,12 +2,34 @@ import open3d as o3d
 import numpy as np
 
 class MeshUtil:
+    """
+    A utility class for handling mesh operations using Open3D.
+    """
 
     def add_base_to_mesh(mesh):
+        """
+        Add a baseplate to the provided mesh.
+
+        Args:
+        mesh (o3d.geometry.TriangleMesh): The mesh to which the baseplate will be added.
+
+        Returns:
+        o3d.geometry.TriangleMesh: The updated mesh with the baseplate.
+        """
+
         # TODO: Add a baseplate to the mesh
         return mesh
 
     def point_cloud_to_mesh(xyz, path, downsample_voxel_size=0, add_base=False):
+        """
+        Convert a point cloud to a mesh and save it to a file.
+
+        Args:
+        xyz (np.array): Input point cloud as a NumPy array.
+        path (str): File path to save the resulting mesh.
+        downsample_voxel_size (float, optional): Voxel size for downsampling. Defaults to 0.
+        add_base (bool, optional): Flag to add a baseplate to the mesh. Defaults to False.
+        """
         
         # Pass xyz to Open3D.o3d.geometry.PointCloud
         pcd = o3d.geometry.PointCloud()
