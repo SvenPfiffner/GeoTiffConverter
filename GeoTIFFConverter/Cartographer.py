@@ -43,7 +43,7 @@ class Cartographer:
         # Connect to GIBS WMS Service
         wms = WebMapService('https://gibs.earthdata.nasa.gov/wms/epsg4326/best/wms.cgi?', version='1.1.1')
 
-        # Configure request for MODIS_Terra_CorrectedReflectance_TrueColor
+        # Configure request for BlueMarble_NextGeneration
         resp = wms.getmap(layers=['BlueMarble_NextGeneration'],  # Layers
                  srs="epsg:4326",  # Map projection
                  bbox=(coord1.x, coord1.y, coord2.x, coord2.y),  # Bounds
