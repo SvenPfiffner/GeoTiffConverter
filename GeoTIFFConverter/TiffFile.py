@@ -1,3 +1,6 @@
+# Author: Sven Pfiffner
+# Created: November 2023
+
 import rasterio
 from matplotlib import pyplot as plt
 from rasterio.merge import merge

@@ -1,3 +1,6 @@
+# Author: Sven Pfiffner
+# Created: November 2023
+
 from geopy.geocoders import Nominatim
 import numpy as np
 

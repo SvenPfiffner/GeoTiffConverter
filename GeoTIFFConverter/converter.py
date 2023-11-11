@@ -1,3 +1,6 @@
+# Authors: Luca Dalbosco, Sven Pfiffner
+# Created: March 2022
+
 import numpy as np
 from .TiffFile import TiffFile
 

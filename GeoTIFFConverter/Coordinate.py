@@ -1,3 +1,6 @@
+# Author: Sven Pfiffner
+# Created: November 2023
+
 import pyproj
 import numpy as np
 
