@@ -45,7 +45,7 @@ class Cartographer:
 
         # Configure request for MODIS_Terra_CorrectedReflectance_TrueColor
         resp = wms.getmap(layers=['BlueMarble_NextGeneration'],  # Layers
-                 srs=coord1.proj_string,  # Map projection
+                 srs="epsg:4326",  # Map projection
                  bbox=(coord1.x, coord1.y, coord2.x, coord2.y),  # Bounds
                  size=(1200, 600),  # Image size
                  time='2021-09-21',  # Time of data
@@ -54,5 +54,4 @@ class Cartographer:
         
         img = Image.open(BytesIO(resp.read()))
 
-        img.save("test.png")
-        return img
+        return np.array(img)
