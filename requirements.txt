@@ -4,3 +4,4 @@ gradio
 pytest
 pyproj
 geopy
+OWSLib

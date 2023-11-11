@@ -3,6 +3,9 @@
 
 from geopy.geocoders import Nominatim
 import numpy as np
+from owslib.wms import WebMapService
+from io import BytesIO
+from PIL import Image
 
 class Cartographer:
     """
@@ -36,5 +39,20 @@ class Cartographer:
         """
         coord1, coord2 = bbox
         assert coord1.proj_string == coord2.proj_string, "Coordinate projections don't match"
-        assert coord1.proj_string == "epsg:4326", "Coordinates must be in latlong format"
-        pass
+
+        # Connect to GIBS WMS Service
+        wms = WebMapService('https://gibs.earthdata.nasa.gov/wms/epsg4326/best/wms.cgi?', version='1.1.1')
+
+        # Configure request for MODIS_Terra_CorrectedReflectance_TrueColor
+        resp = wms.getmap(layers=['BlueMarble_NextGeneration'],  # Layers
+                 srs=coord1.proj_string,  # Map projection
+                 bbox=(coord1.x, coord1.y, coord2.x, coord2.y),  # Bounds
+                 size=(1200, 600),  # Image size
+                 time='2021-09-21',  # Time of data
+                 format='image/png',  # Image format
+                 transparent=True)  # Nodata transparency
+        
+        img = Image.open(BytesIO(resp.read()))
+
+        img.save("test.png")
+        return img

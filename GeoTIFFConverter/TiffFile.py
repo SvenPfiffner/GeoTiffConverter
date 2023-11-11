@@ -110,7 +110,7 @@ class TiffFile:
         x2, y2 = self.tiff.bounds.right, self.tiff.bounds.top
         bbox = Coordinate((x1, y1), self.get_proj()), Coordinate((x2, y2), self.get_proj())
         if format != "":
-            bbox = bbox[0].convert(format), bbox[1].convert(format)
+            bbox = bbox[0].convert(target_format), bbox[1].convert(target_format)
         return bbox
 
     def get_proj(self):
