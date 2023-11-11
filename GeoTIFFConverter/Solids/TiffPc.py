@@ -1,4 +1,4 @@
-# Author: Sven Pfiffner
+# Author: Sven Pfiffner, Luca Dalbosco
 # Created: November 2023
 
 from .TiffSolid import TiffSolid
@@ -7,6 +7,50 @@ class TiffPc(TiffSolid):
     """
     A class representing point clouds of tiff data, implementing the TiffSolid interface.
     """
+
+    def fromTiffFile(tiff) -> 'TiffPc':
+        """
+        Generates a point cloud representation from a TiffFile object.
+
+        Args:
+        tiff (TiffFile): The TiffFile object containing elevation data.
+
+        Returns:
+        TiffPc: A point cloud representation generated from the provided TiffFile.
+
+        Note:
+        This function extracts elevation data from the TiffFile and generates a point cloud
+        by considering the data structure and geospatial information from the TiffFile's metadata.
+        """
+
+        # We assume that the elevation is encoded in the first band
+        data = tiff.to_numpy()[0]
+
+        # Normalize height
+        data -= (data.min() - base_height)
+
+        # Create point cloud
+        x = np.linspace(0, ((data.shape[0] - 1) / 2), num = data.shape[0]).reshape((-1, 1))
+
+        # Shift 0.25 to the right to account for decentricity of datapoints
+        # TODO: Make shift amount dependant on tiff metadata
+        # Shift further to account for the position on a global coordinate system
+        x += (0.25 + tiff.tiff.bounds.left)
+        X = np.matmul(x, np.ones((1, x.shape[0])))
+
+
+        y = np.linspace(0, ((data.shape[1] - 1) / 2), num = data.shape[1]).reshape((1, -1))
+
+        # Shift 0.25 down to account for decentricity of datapoints
+        # TODO: Make shift amount dependant on tiff metadata
+        # Shift further to account for the position on a global coordinate system
+        y += (0.25 + tiff.tiff.bounds.top)
+        Y = np.matmul(np.ones((data.shape[1], 1)), y)
+
+        XYZ = np.dstack((X, Y, data))
+       
+        return TiffPc(XYZ.reshape((-1, 3)))
+
     
     def __init__(self) -> None:
         """
