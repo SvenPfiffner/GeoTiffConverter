@@ -16,7 +16,7 @@ class TiffFile:
     """
     A class for handling GeoTIFF files and performing various operations on them.
     """
-
+    @staticmethod
     def fromCollection(paths):
         """
         Create a TiffFile instance from a collection of file paths.
@@ -32,7 +32,8 @@ class TiffFile:
         for p in paths:
             out.append(TiffFile(p))
         return TiffFile.merge(out)
-
+    
+    @staticmethod
     def merge(geoTiffs):
         """
         Merge multiple GeoTIFFs into a single file.

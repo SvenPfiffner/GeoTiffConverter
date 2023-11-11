@@ -9,6 +9,7 @@ class MeshUtil:
     A utility class for handling mesh operations using Open3D.
     """
 
+    @staticmethod
     def add_base_to_mesh(mesh):
         """
         Add a baseplate to the provided mesh.
@@ -22,7 +23,8 @@ class MeshUtil:
 
         # TODO: Add a baseplate to the mesh
         return mesh
-
+    
+    @staticmethod
     def point_cloud_to_mesh(xyz, path, downsample_voxel_size=0, add_base=False):
         """
         Convert a point cloud to a mesh and save it to a file.

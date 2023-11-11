@@ -12,6 +12,7 @@ class Cartographer:
     A class that provides static methods to perform various cartography tasks.
     """
 
+    @staticmethod
     def coord_to_address(coord):
         """
         Retrieve the address of a given coordinate.
@@ -27,6 +28,7 @@ class Cartographer:
         location = geolocator.reverse((coord.x, coord.y))
         return location.address
     
+    @staticmethod
     def get_bbox_img(bbox):
         """
         Retrieve an aerial image of the area defined by a bounding box.
