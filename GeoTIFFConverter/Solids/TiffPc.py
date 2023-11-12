@@ -2,6 +2,7 @@
 # Created: November 2023
 
 from .TiffSolid import TiffSolid
+import open3d as o3d
 import numpy as np
 
 class TiffPc(TiffSolid):
@@ -9,12 +10,15 @@ class TiffPc(TiffSolid):
     A class representing point clouds of tiff data, implementing the TiffSolid interface.
     """
 
-    def fromTiffFile(tiff) -> 'TiffPc':
+    @staticmethod
+    def fromTiffFile(tiff, downsample_voxel_size = 0) -> 'TiffPc':
         """
         Generates a point cloud representation from a TiffFile object.
 
         Args:
         tiff (TiffFile): The TiffFile object containing elevation data.
+        downsample_voxel_size (int): Strength of the voxel downsampling
+        for the points. Defaults to 0
 
         Returns:
         TiffPc: A point cloud representation generated from the provided TiffFile.
@@ -50,20 +54,47 @@ class TiffPc(TiffSolid):
 
         XYZ = np.dstack((X, Y, data))
        
-        return TiffPc(XYZ.reshape((-1, 3)))
+        return TiffPc(XYZ.reshape((-1, 3)), downsample_voxel_size = downsample_voxel_size)
 
     
-    def __init__(self) -> None:
+    def __init__(self, point_coords, downsample_voxel_size = 0) -> None:
         """
         Initializes a TiffPc object.
-        """
-        pass
 
-    def render(self) -> None:
+        Args:
+        point_coords (np.ndarray): The coordinates of the points.
+        downsample_voxel_size (int): Strength of the voxel downsampling
+        for the points. Defaults to 0
+        """
+
+        # Pass the point_coords to Open3D.o3d.geometry.PointCloud
+        pcd = o3d.geometry.PointCloud()
+        pcd.points = o3d.utility.Vector3dVector(point_coords)
+
+        # Downsample if needed
+        if downsample_voxel_size > 0:
+            pcd = pcd.voxel_down_sample(voxel_size=downsample_voxel_size)
+
+        # Estimate normals
+        pcd.estimate_normals()
+        pcd.orient_normals_consistent_tangent_plane(100)
+    
+        self.pcd = pcd
+
+    def render(self, render_options=None) -> None:
         """
         Renders the point cloud.
         """
-        pass
+        viewer = o3d.visualization.Visualizer()
+        viewer.create_window()
+        viewer.add_geometry(self.pcd)
+
+        # Apply render options
+        if render_options is not None:
+            render_options.apply_to_renderer(viewer)
+            
+        viewer.run()
+        viewer.destroy_window()
     
     def save(self, path: str) -> None:
         """
@@ -72,7 +103,7 @@ class TiffPc(TiffSolid):
         Args:
         path (str): The path where the point cloud representation will be saved.
         """
-        pass
+        o3d.io.write_point_cloud(path, self.pcd)
     
     def translate(self, translation_vec: np.ndarray) -> None:
         """
