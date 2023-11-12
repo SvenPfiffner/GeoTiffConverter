@@ -6,11 +6,8 @@ def visualize_tif(tiff_raw):
     return data.visualize()
 
 def generate_mesh(tiff_raw, downsample, add_base, height):
-    data = tiff.TiffFile(tiff_raw[0])
-    xyz = tiff.Converter.tile_to_point_cloud(data, base_height=height)
-    base_flag = True if add_base == "True" else False
-    tiff.MeshUtil.point_cloud_to_mesh(xyz, "data/mesh.obj", downsample_voxel_size=downsample, add_base=base_flag)
-    return "data/mesh.obj"
+    # TODO: Implement with new solid system
+    pass
 
 def retrieve_geo_data(tiff_raw):
     # Read bounding coordinates from TIFF

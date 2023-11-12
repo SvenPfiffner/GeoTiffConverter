@@ -1,4 +1,4 @@
-# Author: Sven Pfiffner, Luca Dalbosco
+# Author: Luca Dalbosco, Sven Pfiffner
 # Created: November 2023
 
 from .TiffSolid import TiffSolid
@@ -35,24 +35,24 @@ class TiffPc(TiffSolid):
         data -= (data.min())
 
         # Create point cloud
-        x = np.linspace(0, ((data.shape[0] - 1) / 2), num = data.shape[0]).reshape((-1, 1))
+        # NOTE: The renderer uses OpenGL, which is a right-handed system.
+        # thus -> +x-axis (right), +y-axis (up), +z-axis(backwards)
+
+        x = np.linspace(0, ((data.shape[0] - 1) / 2), num = data.shape[0]).reshape((1, -1))
 
         # Shift 0.25 to the right to account for decentricity of datapoints
         # TODO: Make shift amount dependant on tiff metadata
-        # Shift further to account for the position on a global coordinate system
-        x += (0.25 + tiff.tiff.bounds.left)
-        X = np.matmul(x, np.ones((1, x.shape[0])))
+        x += 0.25
+        X = np.matmul(np.ones((x.shape[1], 1)), x)
 
-
-        y = np.linspace(0, ((data.shape[1] - 1) / 2), num = data.shape[1]).reshape((1, -1))
+        z = np.flip(np.linspace(0, ((data.shape[1] - 1) / 2), num = data.shape[1])).reshape((-1, 1))
 
         # Shift 0.25 down to account for decentricity of datapoints
         # TODO: Make shift amount dependant on tiff metadata
-        # Shift further to account for the position on a global coordinate system
-        y += (0.25 + tiff.tiff.bounds.top)
-        Y = np.matmul(np.ones((data.shape[1], 1)), y)
+        z += 0.25
+        Z = np.matmul(z, np.ones((1, z.shape[0])))
 
-        XYZ = np.dstack((X, Y, data))
+        XYZ = np.dstack((X, data, Z))
        
         return TiffPc(XYZ.reshape((-1, 3)), downsample_voxel_size = downsample_voxel_size)
 
@@ -66,7 +66,6 @@ class TiffPc(TiffSolid):
         downsample_voxel_size (int): Strength of the voxel downsampling
         for the points. Defaults to 0
         """
-
         # Pass the point_coords to Open3D.o3d.geometry.PointCloud
         pcd = o3d.geometry.PointCloud()
         pcd.points = o3d.utility.Vector3dVector(point_coords)
@@ -77,7 +76,11 @@ class TiffPc(TiffSolid):
 
         # Estimate normals
         pcd.estimate_normals()
-        pcd.orient_normals_consistent_tangent_plane(100)
+        try:
+            pcd.orient_normals_consistent_tangent_plane(100)
+        except:
+            print("\033[93m[Warning] Normal orientation failed.",
+                  "SolidPc can still be used, but might have wrongly aligned point normals!\033[0m")
     
         self.data = pcd
     

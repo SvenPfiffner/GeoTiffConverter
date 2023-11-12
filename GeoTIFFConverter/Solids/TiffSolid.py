@@ -26,6 +26,7 @@ class TiffSolid(ABC):
         viewer = o3d.visualization.Visualizer()
         viewer.create_window()
         viewer.add_geometry(self.data)
+        viewer.add_geometry(o3d.geometry.TriangleMesh.create_box(width=100, height=100, depth=100))
 
         # Apply render options
         if render_options is not None:
