@@ -64,6 +64,7 @@ class Coordinate:
 
         return np.array([[self.x], [self.y]])
     
+    
     @staticmethod
     def get_midpoint(coord1, coord2):
         """

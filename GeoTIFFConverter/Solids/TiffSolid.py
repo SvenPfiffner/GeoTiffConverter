@@ -26,12 +26,11 @@ class TiffSolid(ABC):
         viewer = o3d.visualization.Visualizer()
         viewer.create_window()
         viewer.add_geometry(self.data)
-        viewer.add_geometry(o3d.geometry.TriangleMesh.create_box(width=100, height=100, depth=100))
 
         # Apply render options
         if render_options is not None:
             render_options.apply_to_renderer(viewer)
-            
+        
         viewer.run()
         viewer.destroy_window()
 
@@ -42,34 +41,38 @@ class TiffSolid(ABC):
         Args:
         translation_vec (np.ndarray): The translation vector to move the solid.
         """
-        pass
+        self.data.translate(translation_vec)
     
-    def scale(self, scale_vec: np.ndarray) -> None:
+    def scale(self, scale_factor: float) -> None:
         """
-        Scales the solid along different axes.
+        Scales the solid by a given factor
 
         Args:
-        scale_vec (np.ndarray): The scaling factors for each axis.
-        """
-        pass
+        scale_vec (float): The scaling factor
 
-    def rotate(self, rotation_mat: np.ndarray) -> None:
+        Note: This scale is origin-preserving and might change the
+        center of mass
         """
-        Rotates the solid based on a rotation matrix.
+        self.data.scale(scale_factor, center=(0, 0, 0))
+
+    def rotate(self, rotation_vec: np.ndarray) -> None:
+        """
+        Rotates the solid based on a rotation vector.
 
         Args:
-        rotation_mat (np.ndarray): The rotation matrix to apply.
+        rotation_vec (np.ndarray): A 3d vector that encodes rotation in the x,y,z axes.
         """
-        pass
+        R = self.data.get_rotation_matrix_from_xyz(rotation_vec)
+        self.data.rotate(R)
 
     def transform(self, transf_mat: np.ndarray) -> None:
         """
         Applies a general transformation to the solid.
 
         Args:
-        transf_mat (np.ndarray): The transformation matrix.
+        transf_mat (np.ndarray): A 4x4 homogeneous transformation matrix.
         """
-        pass
+        self.data.transform(transf_mat)
 
     @abstractmethod
     def union(self, other: 'TiffSolid') -> 'TiffSolid':

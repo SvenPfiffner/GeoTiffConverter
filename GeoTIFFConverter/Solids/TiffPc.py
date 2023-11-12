@@ -32,7 +32,8 @@ class TiffPc(TiffSolid):
         data = tiff.to_numpy()[0]
 
         # Normalize height
-        data -= (data.min())
+        origin_height = data.min()
+        data -= origin_height
 
         # Create point cloud
         # NOTE: The renderer uses OpenGL, which is a right-handed system.
@@ -53,17 +54,24 @@ class TiffPc(TiffSolid):
         Z = np.matmul(z, np.ones((1, z.shape[0])))
 
         XYZ = np.dstack((X, data, Z))
+
+        # Retrieve the x,z coordinate of the tiff
+        origin_coord = tiff.get_bounding_coordinates()[0]
+
        
-        return TiffPc(XYZ.reshape((-1, 3)), downsample_voxel_size = downsample_voxel_size)
+        return TiffPc(XYZ.reshape((-1, 3)), origin_coord, origin_height, downsample_voxel_size = downsample_voxel_size)
 
     
-    def __init__(self, point_coords, downsample_voxel_size = 0) -> None:
+    def __init__(self, point_coords, world_origin, origin_height, downsample_voxel_size = 0) -> None:
         """
         Initializes a TiffPc object.
 
         Args:
         point_coords (np.ndarray): The coordinates of the points.
-        downsample_voxel_size (int): Strength of the voxel downsampling
+        world_origin (Coordinate): The real-world 2d coordinate of the
+        origin point.
+        origin_height (float): The real-world height of the origin point
+        downsample_voxel_size (int, optional): Strength of the voxel downsampling
         for the points. Defaults to 0
         """
         # Pass the point_coords to Open3D.o3d.geometry.PointCloud
@@ -83,6 +91,8 @@ class TiffPc(TiffSolid):
                   "SolidPc can still be used, but might have wrongly aligned point normals!\033[0m")
     
         self.data = pcd
+        self.world_origin = world_origin
+        self.origin_height = origin_height
     
     def save(self, path: str) -> None:
         """
@@ -91,7 +101,7 @@ class TiffPc(TiffSolid):
         Args:
         path (str): The path where the point cloud representation will be saved.
         """
-        o3d.io.write_point_cloud(path, self.pcd)
+        o3d.io.write_point_cloud(path, self.data)
     
     def union(self, other: TiffSolid) -> TiffSolid:
         """
@@ -103,4 +113,17 @@ class TiffPc(TiffSolid):
         Returns:
         TiffSolid: The result of merging the solids.
         """
-        pass
+        
+        # Assert matching origin coordinate projection
+        same_proj = self.world_origin.proj_string == other.world_origin.proj_string
+        assert same_proj, "TiffSolids from different coordinate systems can't be combined"
+
+        # Get offset of TiffSolids
+        offset = other.world_origin.to_numpy() - self.world_origin.to_numpy()
+        offset_height = other.origin_height - self.origin_height
+
+        # Apply offset to other tile
+        other.translate((offset[0, 0], offset_height ,offset[1, 0]))
+
+        # Merge geometries
+        self.data += other.data

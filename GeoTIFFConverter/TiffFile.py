@@ -19,50 +19,24 @@ class TiffFile:
     @staticmethod
     def fromCollection(paths):
         """
-        Create a TiffFile instance from a collection of file paths.
+        Create a list of TiffFile instances from a list of file paths.
 
         Args:
         paths (list): A list of file paths to GeoTIFF files.
 
         Returns:
-        TiffFile: A merged TiffFile from the collection of TiffFiles.
+        List[TiffFile]: A list of TiffFile instances.
         """
 
         out = []
+        i = 0
         for p in paths:
+            print(f"\033[94mReading tiff resource {i+1}/{len(paths)}\033[0m", end='\r')
             out.append(TiffFile(p))
-        return TiffFile.merge(out)
+            i += 1
+        print("")
+        return out
     
-    @staticmethod
-    def merge(geoTiffs):
-        """
-        Merge multiple GeoTIFFs into a single file.
-
-        Args:
-        geoTiffs (list): A list of TiffFile instances to be merged.
-
-        Returns:
-        TiffFile: A TiffFile instance representing the merged GeoTIFF.
-        """
-
-        rasters = []
-        for g in geoTiffs:
-            rasters.append(g.tiff)
-
-        mosaic, output = merge(rasters)
-        output_meta = rasters[0].meta.copy()
-        output_meta.update(
-            {"driver": "GTiff",
-                "height": mosaic.shape[1],
-                "width": mosaic.shape[2],
-                "transform": output,
-            }
-        )
-        with rio.open("data/merge.tif", "w", **output_meta) as m:
-            m.write(mosaic)
-
-        return TiffFile("data/merge.tif")
-
     
     def __init__(self, path):
         """
@@ -110,7 +84,7 @@ class TiffFile:
         x1, y1 = self.tiff.bounds.left, self.tiff.bounds.bottom
         x2, y2 = self.tiff.bounds.right, self.tiff.bounds.top
         bbox = Coordinate((x1, y1), self.get_proj()), Coordinate((x2, y2), self.get_proj())
-        if format != "":
+        if target_format != "":
             bbox = bbox[0].convert(target_format), bbox[1].convert(target_format)
         return bbox
 
