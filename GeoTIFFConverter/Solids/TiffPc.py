@@ -79,22 +79,7 @@ class TiffPc(TiffSolid):
         pcd.estimate_normals()
         pcd.orient_normals_consistent_tangent_plane(100)
     
-        self.pcd = pcd
-
-    def render(self, render_options=None) -> None:
-        """
-        Renders the point cloud.
-        """
-        viewer = o3d.visualization.Visualizer()
-        viewer.create_window()
-        viewer.add_geometry(self.pcd)
-
-        # Apply render options
-        if render_options is not None:
-            render_options.apply_to_renderer(viewer)
-            
-        viewer.run()
-        viewer.destroy_window()
+        self.data = pcd
     
     def save(self, path: str) -> None:
         """
@@ -104,42 +89,6 @@ class TiffPc(TiffSolid):
         path (str): The path where the point cloud representation will be saved.
         """
         o3d.io.write_point_cloud(path, self.pcd)
-    
-    def translate(self, translation_vec: np.ndarray) -> None:
-        """
-        Translates the point cloud using a translation vector.
-
-        Args:
-        translation_vec (np.ndarray): The translation vector to move the point cloud.
-        """
-        pass
-    
-    def scale(self, scale_vec: np.ndarray) -> None:
-        """
-        Scales the point cloud along different axes.
-
-        Args:
-        scale_vec (np.ndarray): The scaling factors for each axis.
-        """
-        pass
-    
-    def rotate(self, rotation_mat: np.ndarray) -> None:
-        """
-        Rotates the point cloud based on a rotation matrix.
-
-        Args:
-        rotation_mat (np.ndarray): The rotation matrix for transforming the point cloud.
-        """
-        pass
-    
-    def transform(self, transf_mat: np.ndarray) -> None:
-        """
-        Applies a general transformation to the point cloud.
-
-        Args:
-        transf_mat (np.ndarray): The transformation matrix.
-        """
-        pass
     
     def union(self, other: TiffSolid) -> TiffSolid:
         """

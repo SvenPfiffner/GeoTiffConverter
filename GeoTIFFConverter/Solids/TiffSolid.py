@@ -2,29 +2,37 @@
 # Created: November 2023
 
 import numpy as np
+import open3d as o3d
+from abc import ABC, abstractmethod
 
-class TiffSolid:
+class TiffSolid(ABC):
     """
-    An interface for tiff solid objects.
+    An abstract class for tiff solid objects.
 
-    This interface defines methods for common operations on solid representations,
+    This abstract class defines solid representations of tiff data,
     intended to be implemented by subclasses for different types of solids.
     """
 
-    def render(self) -> None:
+    data = None # Contains the solid specific data
+
+    def render(self, render_options=None) -> None:
         """
         Renders the solid.
-        """
-        pass
-
-    def save(self, path: str) -> None:
-        """
-        Saves the representation of the solid to a specified path.
 
         Args:
-        path (str): The path where the solid representation will be saved.
+        render_options (RenderOptions, optional): Options to apply to the renderer
         """
-        pass
+
+        viewer = o3d.visualization.Visualizer()
+        viewer.create_window()
+        viewer.add_geometry(self.data)
+
+        # Apply render options
+        if render_options is not None:
+            render_options.apply_to_renderer(viewer)
+            
+        viewer.run()
+        viewer.destroy_window()
 
     def translate(self, translation_vec: np.ndarray) -> None:
         """
@@ -32,9 +40,6 @@ class TiffSolid:
 
         Args:
         translation_vec (np.ndarray): The translation vector to move the solid.
-
-        Note:
-        The vector's shape should be compatible with the solid's representation.
         """
         pass
     
@@ -65,6 +70,7 @@ class TiffSolid:
         """
         pass
 
+    @abstractmethod
     def union(self, other: 'TiffSolid') -> 'TiffSolid':
         """
         Performs a union operation with another solid.
@@ -74,5 +80,15 @@ class TiffSolid:
 
         Returns:
         TiffSolid: The result of merging the solids.
+        """
+        pass
+
+    @abstractmethod
+    def save(self, path: str) -> None:
+        """
+        Saves the representation of the solid to a specified path.
+
+        Args:
+        path (str): The path where the solid representation will be saved.
         """
         pass
