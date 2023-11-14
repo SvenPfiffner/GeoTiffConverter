@@ -11,28 +11,28 @@ def timing(f):
         ts = time()
         result = f(*args, **kw)
         te = time()
-        print('func:%r args:[%r, %r] took: %2.4f sec' % \
-          (f.__name__, args, kw, te-ts))
+        print('func:%r args:[%r] took: %2.4f sec' % \
+          (f.__name__, kw, te-ts))
         return result
     return wrap
 
 
 
 #Measure time of a tiff to pointcloud load
-@timing
 def load_from_file():
     return tiff.TiffFile("data/input/1.tif")
 
 @timing
-def file_to_pcd(file):
-    return tiff.Solids.TiffPc.fromTiffFile(file)
+def file_to_pcd(file, non_trivial=True):
+    return tiff.Solids.TiffPc.fromTiffFile(file, normal_plane_orient=non_trivial, downsample_voxel_size=0)
 
 def load():
     file = load_from_file()
-    pcd = file_to_pcd(file)
+    print("Loading file to pcd with trivial normal calculation")
+    pcd = file_to_pcd(file, non_trivial=False)
     return pcd
 
-load()
+pcd = load()
 
 
 # Load csv resource into TiffFile objects

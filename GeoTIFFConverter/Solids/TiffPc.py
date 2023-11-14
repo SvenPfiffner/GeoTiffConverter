@@ -11,12 +11,15 @@ class TiffPc(TiffSolid):
     """
 
     @staticmethod
-    def fromTiffFile(tiff, downsample_voxel_size = 0) -> 'TiffPc':
+    def fromTiffFile(tiff, normal_plane_orient = False, downsample_voxel_size = 0) -> 'TiffPc':
         """
         Generates a point cloud representation from a TiffFile object.
 
         Args:
         tiff (TiffFile): The TiffFile object containing elevation data.
+        normal_plane_orient (bool, optional): Wether the point normals should be
+        oriented using consistent tangent plane. Otherwise trivial orientation is used.
+        Defaults to False
         downsample_voxel_size (int): Strength of the voxel downsampling
         for the points. Defaults to 0
 
@@ -59,10 +62,12 @@ class TiffPc(TiffSolid):
         origin_coord = tiff.get_bounding_coordinates()[0]
 
        
-        return TiffPc(XYZ.reshape((-1, 3)), origin_coord, origin_height, downsample_voxel_size = downsample_voxel_size)
+        return TiffPc(XYZ.reshape((-1, 3)), origin_coord,
+                      origin_height, normal_plane_orient=normal_plane_orient,
+                      downsample_voxel_size = downsample_voxel_size)
 
     
-    def __init__(self, point_coords, world_origin, origin_height, downsample_voxel_size = 0) -> None:
+    def __init__(self, point_coords, world_origin, origin_height, normal_plane_orient = False, downsample_voxel_size = 0) -> None:
         """
         Initializes a TiffPc object.
 
@@ -71,6 +76,9 @@ class TiffPc(TiffSolid):
         world_origin (Coordinate): The real-world 2d coordinate of the
         origin point.
         origin_height (float): The real-world height of the origin point
+        normal_plane_orient (bool, optional): Wether the point normals should be
+        oriented using consistent tangent plane. Otherwise trivial orientation is used.
+        Defaults to False
         downsample_voxel_size (int, optional): Strength of the voxel downsampling
         for the points. Defaults to 0
         """
@@ -81,14 +89,20 @@ class TiffPc(TiffSolid):
         # Downsample if needed
         if downsample_voxel_size > 0:
             pcd = pcd.voxel_down_sample(voxel_size=downsample_voxel_size)
+            
 
-        # Estimate normals
+        # TODO: Evaluate wether the trivial approach is sufficient for mesh creation
         pcd.estimate_normals()
-        try:
-            pcd.orient_normals_consistent_tangent_plane(100)
-        except:
-            print("\033[93m[Warning] Normal orientation failed.",
-                  "SolidPc can still be used, but might have wrongly aligned point normals!\033[0m")
+        if normal_plane_orient:
+            try:
+                pcd.orient_normals_consistent_tangent_plane(100)
+            except:
+                print("\033[93m[Warning] Normal orientation failed.",
+                    "SolidPc can still be used, but might have wrongly aligned point normals!\033[0m")
+        else:
+            pcd.orient_normals_to_align_with_direction((0,1,0))
+
+        
     
         self.data = pcd
         self.world_origin = world_origin
