@@ -3,6 +3,7 @@
 
 import numpy as np
 from .TiffSolid import TiffSolid
+from .TiffPc import TiffPc
 import open3d as o3d
 
 class TiffMesh(TiffSolid):
@@ -11,11 +12,22 @@ class TiffMesh(TiffSolid):
     """
 
     @staticmethod
+    def fromTiffFile(tiff) -> 'TiffMesh':
+
+        # Load as TiffPc
+        tiff_pc = TiffPc.fromTiffFile(tiff)
+
+        # Run Poisson surface reconstruction    
+        mesh, _ = o3d.geometry.TriangleMesh.create_from_point_cloud_poisson(tiff_pc.data, depth=9)
+
+        return TiffMesh(mesh, tiff_pc.world_origin,
+                      tiff_pc.origin_height)
+
+    @staticmethod
     def fromTiffPc(tiff_pc) -> 'TiffMesh':
 
         # Run Poisson surface reconstruction    
-        with o3d.utility.VerbosityContextManager(o3d.utility.VerbosityLevel.Debug) as cm:
-            mesh, _ = o3d.geometry.TriangleMesh.create_from_point_cloud_poisson(tiff_pc.data, depth=9)
+        mesh, _ = o3d.geometry.TriangleMesh.create_from_point_cloud_poisson(tiff_pc.data, depth=9)
 
         return TiffMesh(mesh, tiff_pc.world_origin,
                       tiff_pc.origin_height)
@@ -49,5 +61,16 @@ class TiffMesh(TiffSolid):
         Returns:
         TiffSolid: The result of merging the solids.
         """
-        # TODO: Implement
-        pass
+        # Assert matching origin coordinate projection
+        same_proj = self.world_origin.proj_string == other.world_origin.proj_string
+        assert same_proj, "TiffSolids from different coordinate systems can't be combined"
+
+        # Get offset of TiffSolids
+        offset = other.world_origin.to_numpy() - self.world_origin.to_numpy()
+        offset_height = other.origin_height - self.origin_height
+
+        # Apply offset to other tile
+        other.translate((offset[0, 0], offset_height ,offset[1, 0]))
+
+        # Merge geometries
+        self.data += other.data

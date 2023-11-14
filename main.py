@@ -18,17 +18,24 @@ def timing(f):
 
 
 @timing
-def file_to_mesh():
-    file = tiff.TiffFile("data/input/1.tif")
-    pcd = tiff.Solids.TiffPc.fromTiffFile(file)
+def files_to_mesh():
+    file1 = tiff.TiffFile("data/input/1.tif")
+    file2 = tiff.TiffFile("data/input/2.tif")
+    file3 = tiff.TiffFile("data/input/3.tif")
+    file4 = tiff.TiffFile("data/input/4.tif")
+
+    pcd = tiff.Solids.TiffPc.fromTiffFile(file1)
+    pcd.union(tiff.Solids.TiffPc.fromTiffFile(file2))
+    pcd.union(tiff.Solids.TiffPc.fromTiffFile(file3))
+    pcd.union(tiff.Solids.TiffPc.fromTiffFile(file4))
+
     mesh = tiff.Solids.TiffMesh.fromTiffPc(pcd)
-    return pcd, mesh
+    return mesh
 
+mesh = files_to_mesh()
 
-pcd, mesh = file_to_mesh()
-pcd.translate((1000, 0, 0))
-options = tiff.Solids.RenderOptions(mesh_show_wireframe=False, mesh_color="y_coordinate")
-tiff.Solids.TiffSolid.render_multiple([pcd, mesh], render_options=options)
+options = tiff.Solids.RenderOptions(mesh_color="y_coordinate")
+mesh.render(render_options=options)
 
 
 
