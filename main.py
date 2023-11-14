@@ -2,22 +2,8 @@
 import GeoTIFFConverter as tiff
 import numpy as np
 
-from functools import wraps
-from time import time
-
-def timing(f):
-    @wraps(f)
-    def wrap(*args, **kw):
-        ts = time()
-        result = f(*args, **kw)
-        te = time()
-        print('func:%r args:[%r] took: %2.4f sec' % \
-          (f.__name__, kw, te-ts))
-        return result
-    return wrap
 
 
-@timing
 def files_to_mesh():
     file1 = tiff.TiffFile("data/input/1.tif")
     file2 = tiff.TiffFile("data/input/2.tif")
