@@ -3,23 +3,31 @@
 
 import numpy as np
 from .TiffSolid import TiffSolid
+import open3d as o3d
 
 class TiffMesh(TiffSolid):
     """
     A class representing meshes of tiff data, implementing the TiffSolid interface.
     """
 
-    def __init__(self) -> None:
+    @staticmethod
+    def fromTiffPc(tiff_pc) -> 'TiffMesh':
+
+        # Run Poisson surface reconstruction    
+        with o3d.utility.VerbosityContextManager(o3d.utility.VerbosityLevel.Debug) as cm:
+            mesh, _ = o3d.geometry.TriangleMesh.create_from_point_cloud_poisson(tiff_pc.data, depth=9)
+
+        return TiffMesh(mesh, tiff_pc.world_origin,
+                      tiff_pc.origin_height)
+
+    def __init__(self, data, world_origin, origin_height) -> None:
         """
         Initializes a TiffMesh object.
         """
-        pass
+        self.data = data
+        self.world_origin = world_origin
+        self.origin_height = origin_height
 
-    def render(self) -> None:
-        """
-        Renders the mesh.
-        """
-        pass
     
     def save(self, path: str) -> None:
         """
@@ -28,43 +36,8 @@ class TiffMesh(TiffSolid):
         Args:
         path (str): The path where the mesh representation will be saved.
         """
-        pass
+        o3d.io.write_triangle_mesh(path, self.data)
     
-    def translate(self, translation_vec: np.ndarray) -> None:
-        """
-        Translates the mesh using a translation vector.
-
-        Args:
-        translation_vec (np.ndarray): The translation vector to move the mesh.
-        """
-        pass
-    
-    def scale(self, scale_vec: np.ndarray) -> None:
-        """
-        Scales the mesh along different axes.
-
-        Args:
-        scale_vec (np.ndarray): The scaling factors for each axis.
-        """
-        pass
-    
-    def rotate(self, rotation_mat: np.ndarray) -> None:
-        """
-        Rotates the mesh based on a rotation matrix.
-
-        Args:
-        rotation_mat (np.ndarray): The rotation matrix for transforming the mesh.
-        """
-        pass
-    
-    def transform(self, transf_mat: np.ndarray) -> None:
-        """
-        Applies a general transformation to the mesh.
-
-        Args:
-        transf_mat (np.ndarray): The transformation matrix.
-        """
-        pass
     
     def union(self, other: TiffSolid) -> TiffSolid:
         """
@@ -76,4 +49,5 @@ class TiffMesh(TiffSolid):
         Returns:
         TiffSolid: The result of merging the solids.
         """
+        # TODO: Implement
         pass

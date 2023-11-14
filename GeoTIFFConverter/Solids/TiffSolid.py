@@ -15,6 +15,28 @@ class TiffSolid(ABC):
 
     data = None # Contains the solid specific data
 
+    @staticmethod
+    def render_multiple(geometries, render_options=None) -> None:
+        """
+        Renders multiple solids in the same scene.
+
+        Args:
+        render_options (RenderOptions, optional): Options to apply to the renderer
+        """
+
+        viewer = o3d.visualization.Visualizer()
+        viewer.create_window()
+        for g in geometries:
+            viewer.add_geometry(g.data)
+
+        # Apply render options
+        if render_options is not None:
+            render_options.apply_to_renderer(viewer)
+        
+        viewer.run()
+        viewer.destroy_window()
+
+
     def render(self, render_options=None) -> None:
         """
         Renders the solid.

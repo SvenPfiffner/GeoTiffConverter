@@ -46,12 +46,12 @@ class RenderOptions:
         self.show_coordinate_frame = show_coordinate_frame
         self.phong_lighting = phong_lighting
 
-        self._mesh_color_modes = {"default": 0,
-                                  "color": 1,
-                                  "x_coordinate": 2,
-                                  "y_coordinate": 3,
-                                  "z_coordinate": 4,
-                                  "normal": 9}
+        self._mesh_color_modes = {"default": o3d.visualization.MeshColorOption.Default,
+                                  "color": o3d.visualization.MeshColorOption.Color,
+                                  "x_coordinate": o3d.visualization.MeshColorOption.XCoordinate,
+                                  "y_coordinate": o3d.visualization.MeshColorOption.YCoordinate,
+                                  "z_coordinate": o3d.visualization.MeshColorOption.ZCoordinate,
+                                  "normal": o3d.visualization.MeshColorOption.Normal}
 
     def apply_to_renderer(self, viewer):
         """
@@ -62,8 +62,7 @@ class RenderOptions:
         """
         opt = viewer.get_render_option()
         opt.background_color = self.background_color
-        # TODO: Add enum
-        # opt.mesh_color_option = self._mesh_color_modes[self.mesh_color]
+        opt.mesh_color_option = self._mesh_color_modes[self.mesh_color]
         opt.mesh_show_wireframe = self.mesh_show_wireframe
         opt.point_show_normal = self.point_show_normal
         opt.show_coordinate_frame = self.show_coordinate_frame

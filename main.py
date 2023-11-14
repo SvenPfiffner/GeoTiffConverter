@@ -17,22 +17,19 @@ def timing(f):
     return wrap
 
 
-
-#Measure time of a tiff to pointcloud load
-def load_from_file():
-    return tiff.TiffFile("data/input/1.tif")
-
 @timing
-def file_to_pcd(file, non_trivial=True):
-    return tiff.Solids.TiffPc.fromTiffFile(file, normal_plane_orient=non_trivial, downsample_voxel_size=0)
+def file_to_mesh():
+    file = tiff.TiffFile("data/input/1.tif")
+    pcd = tiff.Solids.TiffPc.fromTiffFile(file)
+    mesh = tiff.Solids.TiffMesh.fromTiffPc(pcd)
+    return pcd, mesh
 
-def load():
-    file = load_from_file()
-    print("Loading file to pcd with trivial normal calculation")
-    pcd = file_to_pcd(file, non_trivial=False)
-    return pcd
 
-pcd = load()
+pcd, mesh = file_to_mesh()
+pcd.translate((1000, 0, 0))
+options = tiff.Solids.RenderOptions(mesh_show_wireframe=False, mesh_color="y_coordinate")
+tiff.Solids.TiffSolid.render_multiple([pcd, mesh], render_options=options)
+
 
 
 # Load csv resource into TiffFile objects
